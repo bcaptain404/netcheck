@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION="v0.1.0"
+VERSION="v0.1.1"
 
 # Defaults
 minutes=30
@@ -74,7 +74,7 @@ echo
 
 prev_webAlive=
 
-while true; do
+check_connection() {
   if ping -c 1 -W 5 "$website" > /dev/null 2>&1; then
     webAlive=1
   else
@@ -100,5 +100,13 @@ while true; do
   fi
 
   prev_webAlive=$webAlive
+}
+
+# Initial check
+check_connection
+
+# Loop
+while true; do
   sleep "$interval"
+  check_connection
 done

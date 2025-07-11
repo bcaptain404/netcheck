@@ -21,6 +21,9 @@ With no arguments provided, it:
 - Plays `down.wav` when offline
 - Plays `up.wav` when back online
 
+## Dependencies
+ - mpg123
+
 ## 🚀 Usage
 
 ```bash
