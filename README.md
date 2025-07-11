@@ -1,13 +1,26 @@
 # net-check.sh
 
-**net-check.sh** is a lightweight Bash script to monitor your internet connection and notify you with sound alerts when connectivity changes.
+**Version:** v0.1.0  
+**Author:** You  
+**License:** MIT
 
-## 🔧 Features
+`net-check.sh` is a minimalist Bash script that checks your internet connectivity on a schedule and plays a sound when it drops or recovers.
 
-- Periodically pings a website to test internet availability.
-- Plays a sound when internet **goes down** or **comes back up**.
-- Customizable interval, website, and sound files.
-- Sane defaults — just run it!
+## ✅ Features
+
+- Pings a website every N minutes
+- Detects when connection is lost or restored
+- Plays customizable sounds for each event
+- Sane defaults so you can just run it
+
+## 🧪 Default Behavior
+
+With no arguments provided, it:
+
+- Pings `google.com`
+- Every `30` minutes
+- Plays `down.wav` when offline
+- Plays `up.wav` when back online
 
 ## 🚀 Usage
 
