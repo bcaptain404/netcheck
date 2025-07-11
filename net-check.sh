@@ -1,5 +1,7 @@
 #!/bin/bash
 
+VERSION="v0.1.0"
+
 # Defaults
 minutes=30
 website="google.com"
@@ -8,6 +10,7 @@ sound_up="up.wav"
 
 print_help() {
   cat <<EOF
+net-check.sh $VERSION
 Usage: $0 [options]
 
 Checks internet connectivity by pinging a website every N minutes and plays a sound on status change.
@@ -21,8 +24,7 @@ Options:
 
 Examples:
   $0
-  $0 -m 5 -w example.com -down sad.wav -up yay.wav
-
+  $0 -m 5 -w example.com -down offline.wav -up online.wav
 EOF
 }
 
@@ -63,7 +65,7 @@ interval=$((minutes * 60))
 [[ ! -f "$sound_down" ]] && echo "⚠ Warning: Down sound file '$sound_down' not found. No sound will be played when internet goes down."
 [[ ! -f "$sound_up" ]] && echo "⚠ Warning: Up sound file '$sound_up' not found. No sound will be played when internet comes back up."
 
-echo "Starting net-check loop..."
+echo "Starting net-check $VERSION..."
 echo " - Interval: every $minutes minute(s)"
 echo " - Website:  $website"
 echo " - Down sound: $sound_down"
@@ -83,14 +85,14 @@ while true; do
     if [[ "$webAlive" -eq 1 ]]; then
       echo "$(date): Internet is back up."
       if [[ -f "$sound_up" ]]; then
-        aplay "$sound_up" &
+        mpg123 "$sound_up" > /dev/null 2>&1 &
       else
         echo "⚠ Cannot play '$sound_up': File not found."
       fi
     else
       echo "$(date): Internet is down!"
       if [[ -f "$sound_down" ]]; then
-        aplay "$sound_down" &
+        mpg123 "$sound_down" > /dev/null 2>&1 &
       else
         echo "⚠ Cannot play '$sound_down': File not found."
       fi
