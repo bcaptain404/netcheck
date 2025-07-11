@@ -1,7 +1,6 @@
 # net-check.sh
 
 **Version:** v0.1.0  
-**Author:** You  
 **License:** MIT
 
 `net-check.sh` is a minimalist Bash script that checks your internet connectivity on a schedule and plays a sound when it drops or recovers.
