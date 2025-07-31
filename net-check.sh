@@ -3,36 +3,45 @@
 VERSION="v0.1.1"
 
 # Defaults
-minutes=30
+seconds_ifdown=5
+seconds_ifup=300
 website="google.com"
-sound_down="down.wav"
-sound_up="up.wav"
+sound_down=~/"snd/ds9_odo_console_1.mp3"
+sound_up=~/"snd/ds9_odo_console_2.mp3"
 
 print_help() {
   cat <<EOF
 net-check.sh $VERSION
 Usage: $0 [options]
 
-Checks internet connectivity by pinging a website every N minutes and plays a sound on status change.
+Checks internet connectivity by pinging a website every N seconds and plays a sound on status change.
 
 Options:
-  -m MINUTES       Interval in minutes between checks (default: 30)
-  -w WEBSITE       Website to ping (default: google.com)
-  -down FILE       Sound file to play when internet goes down (default: down.wav)
-  -up FILE         Sound file to play when internet comes back up (default: up.wav)
+  -S SECONDS       Interval in seconds between checks if net is up (default: $seconds_ifup)
+  -s SECONDS       Interval in seconds between checks if net is down (default: $seconds_ifdown)
+  -w WEBSITE       Website to ping (default: $website)
+  -down FILE       Sound file to play when internet goes down (default: $sound_down)
+  -up FILE         Sound file to play when internet comes back up (default: $sound_up)
   --help           Show this help message and exit
+  -v               Verbose mode.
 
 Examples:
   $0
-  $0 -m 5 -w example.com -down offline.wav -up online.wav
+  $0 -w example.com -down offline.mp3 -up online.mp3
 EOF
 }
+
+VERBOSE=0
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    -m)
-      minutes="$2"
+    -s)
+      seconds_ifdown="$2"
+      shift 2
+      ;;
+    -S)
+      seconds_ifup="$2"
       shift 2
       ;;
     -w)
@@ -47,6 +56,11 @@ while [[ $# -gt 0 ]]; do
       sound_up="$2"
       shift 2
       ;;
+    -v)
+      VERBOSE="1"
+      echo "Verbose mode"
+      shift 1
+      ;;
     --help)
       print_help
       exit 0
@@ -59,14 +73,13 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-interval=$((minutes * 60))
-
 # Warn about missing sound files
 [[ ! -f "$sound_down" ]] && echo "⚠ Warning: Down sound file '$sound_down' not found. No sound will be played when internet goes down."
 [[ ! -f "$sound_up" ]] && echo "⚠ Warning: Up sound file '$sound_up' not found. No sound will be played when internet comes back up."
 
 echo "Starting net-check $VERSION..."
-echo " - Interval: every $minutes minute(s)"
+echo " - Up Interval: every $seconds_ifup second(s)"
+echo " - Down Interval: every $seconds_ifdown second(s)"
 echo " - Website:  $website"
 echo " - Down sound: $sound_down"
 echo " - Up sound:   $sound_up"
@@ -75,6 +88,7 @@ echo
 prev_webAlive=
 
 check_connection() {
+  [[ "$VERBOSE" == "1" ]] && echo "pinging..."
   if ping -c 1 -W 5 "$website" > /dev/null 2>&1; then
     webAlive=1
   else
@@ -83,14 +97,14 @@ check_connection() {
 
   if [[ "$webAlive" -ne "$prev_webAlive" ]]; then
     if [[ "$webAlive" -eq 1 ]]; then
-      echo "$(date): Internet is back up."
+      echo "$(date): Internet is up."
       if [[ -f "$sound_up" ]]; then
         mpg123 "$sound_up" > /dev/null 2>&1 &
       else
         echo "⚠ Cannot play '$sound_up': File not found."
       fi
     else
-      echo "$(date): Internet is down!"
+      echo "$(date): Internet is DOWN!"
       if [[ -f "$sound_down" ]]; then
         mpg123 "$sound_down" > /dev/null 2>&1 &
       else
@@ -107,6 +121,12 @@ check_connection
 
 # Loop
 while true; do
-  sleep "$interval"
+  if [[ "$prev_webAlive" == "1" ]] ; then
+    [[ "$VERBOSE" == "1" ]] && echo "sleeping $seconds_ifup seconds (up)"
+    sleep "$seconds_ifup"
+  else
+    [[ "$VERBOSE" == "1" ]] && echo "sleeping $seconds_ifdown seconds (down)"
+    sleep "$seconds_ifdown"
+  fi
   check_connection
 done
