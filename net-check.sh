@@ -5,7 +5,8 @@ VERSION="v0.1.1"
 # Defaults
 seconds_ifdown=5
 seconds_ifup=300
-website="google.com"
+website1="google.com"
+website2="duckduckgo.com"
 sound_down=~/"snd/ds9_odo_console_1.mp3"
 sound_up=~/"snd/ds9_odo_console_2.mp3"
 
@@ -19,7 +20,8 @@ Checks internet connectivity by pinging a website every N seconds and plays a so
 Options:
   -S SECONDS       Interval in seconds between checks if net is up (default: $seconds_ifup)
   -s SECONDS       Interval in seconds between checks if net is down (default: $seconds_ifdown)
-  -w WEBSITE       Website to ping (default: $website)
+  -w WEBSITE1      Website1 to ping (default: $website1)
+  -W WEBSITE2      Website1 to ping (default: $website2)
   -down FILE       Sound file to play when internet goes down (default: $sound_down)
   -up FILE         Sound file to play when internet comes back up (default: $sound_up)
   --help           Show this help message and exit
@@ -45,7 +47,11 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     -w)
-      website="$2"
+      website1="$2"
+      shift 2
+      ;;
+    -W)
+      website2="$2"
       shift 2
       ;;
     -down)
@@ -80,7 +86,8 @@ done
 echo "Starting net-check $VERSION..."
 echo " - Up Interval: every $seconds_ifup second(s)"
 echo " - Down Interval: every $seconds_ifdown second(s)"
-echo " - Website:  $website"
+echo " - Website1:  $website1"
+echo " - Website2:  $website2"
 echo " - Down sound: $sound_down"
 echo " - Up sound:   $sound_up"
 echo
@@ -89,11 +96,11 @@ prev_webAlive=
 
 check_connection() {
   [[ "$VERBOSE" == "1" ]] && echo "pinging..."
-  if ping -c 1 -W 5 "$website" > /dev/null 2>&1; then
-    webAlive=1
-  else
-    webAlive=0
-  fi
+
+  {
+    ping -c 1 -W 5 "$website1" > /dev/null 2>&1 || 
+    ping -c 1 -W 5 "$website2" > /dev/null 2>&1
+  } && webAlive=1 || webAlive=0
 
   if [[ "$webAlive" -ne "$prev_webAlive" ]]; then
     if [[ "$webAlive" -eq 1 ]]; then
