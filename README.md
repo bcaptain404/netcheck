@@ -7,22 +7,26 @@
 
 ## ✅ Features
 
-- Pings a website every N minutes
+- Pings a website every N seconds
 - Detects when connection is lost or restored
 - Plays customizable sounds for each event
 - Sane defaults so you can just run it
-
-## 🧪 Default Behavior
-
-With no arguments provided, it:
-
-- Pings `google.com`
-- Every `30` minutes
-- Plays `down.wav` when offline
-- Plays `up.wav` when back online
+- netwatcher-widget.sh is a GUI desktop widget version of the script.
+- Plays a sound when offline
+- Plays a sound when back online
 
 ## Dependencies
+ - bash
+ - ping
  - mpg123
+
+## Desktop Widget Dependencies
+ - all the previous dependencies
+ - yad
+ - xdotool
+ - xprop
+ - xwininfo
+ - wmctrl
 
 ## 🚀 Usage
 
