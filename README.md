@@ -14,6 +14,10 @@
 - netwatcher-widget.sh is a GUI desktop widget version of the script.
 - Plays a sound when offline
 - Plays a sound when back online
+- Desktop widget saves position to ~/.config/netwatch-widget.cfg
+- Saves net connection history to /tmp/net_down_log.txt
+- Saves current connectivity status to /tmp/net_status.txt
+
 
 ## Dependencies
  - bash
@@ -27,6 +31,8 @@
  - xprop
  - xwininfo
  - wmctrl
+
+to install them on Ubuntu: sudo apt install yad xdotool x11-utils wmctrl mpg123
 
 ## 🚀 Usage
 
